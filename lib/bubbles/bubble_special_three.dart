@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 
 ///iMessage's chat bubble type
 ///
@@ -19,12 +20,14 @@ class BubbleSpecialThree extends StatelessWidget {
   final bool seen;
   final TextStyle textStyle;
   final BoxConstraints? constraints;
+  final List<MatchText>? parse;
 
   const BubbleSpecialThree({
     Key? key,
     this.isSender = true,
     this.constraints,
     required this.text,
+    this.parse,
     this.color = Colors.white70,
     this.tail = true,
     this.sent = false,
@@ -35,6 +38,27 @@ class BubbleSpecialThree extends StatelessWidget {
       fontSize: 16,
     ),
   }) : super(key: key);
+
+  Widget _text() {
+    if (parse != null) {
+      return ParsedText(
+          text: text,
+          style: textStyle,
+          regexOptions: RegexOptions(
+              multiLine: true,
+              caseSensitive: false,
+              unicode: false,
+              dotAll: false),
+          alignment: TextAlign.left,
+          parse: parse!);
+    } else {
+      return Text(
+        text,
+        style: textStyle,
+        textAlign: TextAlign.left,
+      );
+    }
+  }
 
   ///chat bubble builder method
   @override
@@ -91,11 +115,7 @@ class BubbleSpecialThree extends StatelessWidget {
                   padding: stateTick
                       ? const EdgeInsets.only(left: 4, right: 20)
                       : const EdgeInsets.only(left: 4, right: 4),
-                  child: Text(
-                    text,
-                    style: textStyle,
-                    textAlign: TextAlign.left,
-                  ),
+                  child: _text(),
                 ),
                 stateIcon != null && stateTick
                     ? Positioned(
